@@ -26,26 +26,17 @@
 #include <stddef.h>
 #endif
 
-#define EMPTY_ALLOC 8
-
+#ifndef EMPTY_ALLOC
+  #define EMPTY_ALLOC 8
+#endif
 /* TO-DO:
    - Read rest of sds api and implement applicable and usefull functions
  */
-
-// #define fptr void *
-
-// struct fat_ptr_struct {  /* used for casts when the array itself is not
-// needed */
-//   size_t len;            /* length of the fat pointer*/
-//   size_t alloc;          /* excluding the header */
-//   uint8_t flags;
-// };
 
 #define fat_toStruct(T, v)                     \
   ((struct f##T##_struct *)(((uint8_t *)(v)) - \
                             offsetof(struct f##T##_struct, vec)))
 
-// #define fat_struct(v) fat_toStruct(at_ptr, v)
 // macro wrappers for functions
 #define fat_new(T, size) f##T##_new(size)
 
@@ -75,41 +66,40 @@
 
 #define fat_bsearch(T, v, cmp, needle) f##T##_bsearch((v), (cmp), (needle))
 
-#define fat_len(T, v) (fat_toStruct(T, (v))->len)
-// static inline size_t fat_len(fptr v) { return fat_struct(v)->len; }
+#define fat_len(T, array) (fat_toStruct(T, (array))->len)
 
-#define fat_avail(T, v) \
-  (fat_toStruct(T, (v))->alloc - fat_toStruct(T, (v))->len)
+#define fat_avail(T, array) \
+  (fat_toStruct(T, (array))->alloc - fat_toStruct(T, (array))->len)
 
-#define fat_setlen(T, v, newlen)          \
+#define fat_setlen(T, array, newlen)          \
   do {                                    \
-    fat_toStruct(T, (v))->len = (newlen); \
+    fat_toStruct(T, (array))->len = (newlen); \
   } while (0)
 
-#define fat_inclen(T, v, inc)           \
+#define fat_inclen(T, array, inc)           \
   do {                                  \
-    fat_toStruct(T, (v))->len += (inc); \
+    fat_toStruct(T, (array))->len += (inc); \
   } while (0)
 
-#define fat_alloc(T, v) (fat_toStruct(T, (v))->alloc)
+#define fat_alloc(T, array) (fat_toStruct(T, (array))->alloc)
 
-#define fat_setalloc(T, v, newlen)          \
+#define fat_setalloc(T, array, newlen)          \
   do {                                      \
-    fat_toStruct(T, (v))->alloc = (newlen); \
+    fat_toStruct(T, (array))->alloc = (newlen); \
   } while (0)
 
-/* Free's a fat array and makes v NULL. No operation is performed if 'v' is
+/* Free's a fat array and makes array NULL. No operation is performed if 'array' is
  * NULL. */
-#define fat_free(T, v)                                         \
+#define fat_free(T, array)                                         \
   do {                                                         \
-    ((v) == NULL) ? (void)(NULL) : free(fat_toStruct(T, (v))); \
+    ((array) == NULL) ? (void)(NULL) : free(fat_toStruct(T, (array))); \
   } while (0)
 
 #define FCMP(T, a, b) int f##T##_cmp(const T a, const T b)
 
 #define CMP(T) f##T##_cmp
 
-#define makefat(T)                                                             \
+#define MAKEFAT(T)                                                             \
                                                                                \
   typedef T *f##T; /*defines a type fType, short for fat type*/                \
                                                                                \

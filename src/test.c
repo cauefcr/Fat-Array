@@ -22,13 +22,13 @@ typedef struct {
 
 typedef char* str;
 
-makefat(char)
+MAKEFAT(char)
 FCMP(char, a, b) { return (int)a - (int)b; }
 
-makefat(int)
+MAKEFAT(int)
 FCMP(int, a, b) { return a - b; }
 
-makefat(float)
+MAKEFAT(float)
 FCMP(float, a, b) {
 #define E 0.0001
   if (a < b - E) {  //
@@ -41,13 +41,13 @@ FCMP(float, a, b) {
 #undef E
 }
 
-makefat(ut)
+MAKEFAT(ut)
 FCMP(ut, a, b) { return memcmp(&a, &b, sizeof(ut)); }
 
-makefat(st)
+MAKEFAT(st)
 FCMP(st, a, b) { return a.i - b.i; }
 
-makefat(str)
+MAKEFAT(str)
 FCMP(str, a, b) { return strcmp(a, b); }
 
 // fold
