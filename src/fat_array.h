@@ -8,130 +8,136 @@
 #ifndef FAT_ARRAY_H
 #define FAT_ARRAY_H
 
-#ifndef STDIO_H
-#define STDIO_H
-#include <stdio.h>
-#endif
-#ifndef STDLIB_H
-#define STDLIB_H
-#include <stdlib.h>
-#endif
-#ifndef STDINT_H
-#define STDINT_H
-#include <stdint.h>  //for uint8_t
-#endif
-
-#ifndef STDDEF_H
-#define STDDEF_H
 #include <stddef.h>
-#endif
+#include <stdint.h>  //for uint8_t
+#include <stdio.h>
+#include <stdlib.h>
 
-#ifndef EMPTY_ALLOC
-  #define EMPTY_ALLOC 8
+#ifndef FA__EMPTY_ALLOC
+  #define FA__EMPTY_ALLOC 8
 #endif
 /* TO-DO:
    - Read rest of sds api and implement applicable and usefull functions
  */
 
-#define fat_toStruct(T, v)                     \
-  ((struct f##T##_struct *)(((uint8_t *)(v)) - \
-                            offsetof(struct f##T##_struct, vec)))
+#define fat_toStruct(fa__T, fa__array)                     \
+  ((struct f##fa__T##_struct *)(((uint8_t *)(fa__array)) - \
+                                offsetof(struct f##fa__T##_struct, vec)))
 
 // macro wrappers for functions
-#define fat_new(T, size) f##T##_new(size)
+#define fat_new(fa__T, fa__size) f##fa__T##_new(fa__size)
 
-#define fat_push(T, array, element) f##T##_push((array), (element))
+#define fat_push(fa__T, fa__array, fa__element) \
+  f##fa__T##_push((fa__array), (fa__element))
 
-#define fat_pop(T, array) f##T##_pop((array))
+#define fat_pop(fa__T, fa__array) f##fa__T##_pop((fa__array))
 
-#define fat_newfrom(T, init, len) f##T##_newfrom((init), (len))
+#define fat_newfrom(fa__T, fa__init, fa__len) \
+  f##fa__T##_newfrom((fa__init), (fa__len))
 
-#define fat_empty(T) f##T##_empty()
+#define fat_empty(fa__T) f##fa__T##_empty()
 
-#define fat_dup(T, array) f##T##_dup((array))
+#define fat_dup(fa__T, fa__array) f##fa__T##_dup((fa__array))
 
-#define fat_growzero(T, array, len) f##T##_growzero((array), (len))
+#define fat_growzero(fa__T, fa__array, fa__len) \
+  f##fa__T##_growzero((fa__array), (fa__len))
 
-#define fat_catlen(T, array, base, len) f##T##_catlen((array), (base), (len))
+#define fat_catlen(fa__T, fa__array, fa__base, fa__len) \
+  f##fa__T##_catlen((fa__array), (fa__base), (fa__len))
 
-#define fat_range(T, array, start, end) f##T##_range((array), (start), (end))
+#define fat_range(fa__T, fa__array, fa__start, fa__end) \
+  f##fa__T##_range((fa__array), (fa__start), (fa__end))
 
-#define fat_map(T, v, func) f##T##_map((v), (func))
+#define fat_map(fa__T, fa__array, fa__func) \
+  f##fa__T##_map((fa__array), (fa__func))
 
-#define fat_fold(T, v, func) f##T##_fold((v), (func))
+#define fat_fold(fa__T, fa__array, fa__func) \
+  f##fa__T##_fold((fa__array), (fa__func))
 
-#define fat_filter(T, v, func) f##T##_filter((v), (func))
+#define fat_filter(fa__T, fa__array, fa__func) \
+  f##fa__T##_filter((fa__array), (fa__func))
 
-#define fat_sort(T, v, cmp) f##T##_sort((v), (cmp))
+#define fat_sort(fa__T, fa__array, fa__cmp) \
+  f##fa__T##_sort((fa__array), (fa__cmp))
 
-#define fat_bsearch(T, v, cmp, needle) f##T##_bsearch((v), (cmp), (needle))
+#define fat_bsearch(fa__T, fa__array, fa__cmp, fa__needle) \
+  f##fa__T##_bsearch((fa__array), (fa__cmp), (fa__needle))
 
-#define fat_len(T, array) (fat_toStruct(T, (array))->len)
+#define fat_len(fa__T, fa__array) (fat_toStruct(fa__T, (fa__array))->len)
 
-#define fat_avail(T, array) \
-  (fat_toStruct(T, (array))->alloc - fat_toStruct(T, (array))->len)
+#define fat_avail(fa__T, fa__array)          \
+  (fat_toStruct(fa__T, (fa__array))->alloc - \
+   fat_toStruct(fa__T, (fa__array))->len)
 
-#define fat_setlen(T, array, newlen)          \
-  do {                                    \
-    fat_toStruct(T, (array))->len = (newlen); \
+#define fat_setlen(fa__T, fa__array, fa__newlen)          \
+  do {                                                    \
+    fat_toStruct(fa__T, (fa__array))->len = (fa__newlen); \
   } while (0)
 
-#define fat_inclen(T, array, inc)           \
-  do {                                  \
-    fat_toStruct(T, (array))->len += (inc); \
+#define fat_inclen(fa__T, fa__array, fa__inc)           \
+  do {                                                  \
+    fat_toStruct(fa__T, (fa__array))->len += (fa__inc); \
   } while (0)
 
-#define fat_alloc(T, array) (fat_toStruct(T, (array))->alloc)
+#define fat_alloc(fa__T, fa__array) (fat_toStruct(fa__T, (fa__array))->alloc)
 
-#define fat_setalloc(T, array, newlen)          \
-  do {                                      \
-    fat_toStruct(T, (array))->alloc = (newlen); \
+#define fat_setalloc(fa__T, fa__array, fa__newlen)          \
+  do {                                                      \
+    fat_toStruct(fa__T, (fa__array))->alloc = (fa__newlen); \
   } while (0)
 
-/* Free's a fat array and makes array NULL. No operation is performed if 'array' is
+/* Free's a fat array and makes array NULL. No operation is performed if
+ * 'fa__array' is
  * NULL. */
-#define fat_free(T, array)                                         \
-  do {                                                         \
-    ((array) == NULL) ? (void)(NULL) : free(fat_toStruct(T, (array))); \
+#define fat_free(fa__T, fa__array)                                  \
+  do {                                                              \
+    ((fa__array) == NULL) ? (void)(NULL)                            \
+                          : free(fat_toStruct(fa__T, (fa__array))); \
   } while (0)
 
-#define FCMP(T, a, b) int f##T##_cmp(const T a, const T b)
+#define FCMP(fa__T, a, b) int f##fa__T##_cmp(const fa__T a, const fa__T b)
 
-#define CMP(T) f##T##_cmp
+#define CMP(fa__T) f##fa__T##_cmp
 
-#define MAKEFAT(T)                                                             \
+#define MAKEFAT(fa__T)                                                         \
                                                                                \
-  typedef T *f##T; /*defines a type fType, short for fat type*/                \
+  typedef fa__T *f##fa__T; /*defines a type ffa__Type, short for fat type*/    \
                                                                                \
-  struct f##T##_struct {                                                       \
+  struct f##fa__T##_struct {                                                   \
     size_t len; /*length of the array*/                                        \
     size_t alloc;                                                              \
     uint8_t flags; /* unused currently */                                      \
-    T vec[];       /*0-length array, the whole point of this implementation*/  \
+    fa__T vec[];   /*0-length array, the whole point of this implementation*/  \
   };                                                                           \
                                                                                \
-  static inline size_t f##T##_avail(const f##T v) { return fat_avail(T, v); }  \
-  static inline size_t f##T##_len(const f##T v) { return fat_len(T, v); }      \
-  static inline void f##T##_setlen(f##T v, const size_t newlen) {              \
-    fat_setlen(T, v, newlen);                                                  \
+  static inline size_t f##fa__T##_avail(const f##fa__T v) {                    \
+    return fat_avail(fa__T, v);                                                \
+  }                                                                            \
+  static inline size_t f##fa__T##_len(const f##fa__T v) {                      \
+    return fat_len(fa__T, v);                                                  \
+  }                                                                            \
+  static inline void f##fa__T##_setlen(f##fa__T v, const size_t newlen) {      \
+    fat_setlen(fa__T, v, newlen);                                              \
     return;                                                                    \
   }                                                                            \
-  static inline void f##T##_inclen(f##T v, const size_t inc) {                 \
-    fat_inclen(T, v, inc);                                                     \
+  static inline void f##fa__T##_inclen(f##fa__T v, const size_t inc) {         \
+    fat_inclen(fa__T, v, inc);                                                 \
     return;                                                                    \
   }                                                                            \
-  static inline size_t f##T##_alloc(const f##T v) { return fat_alloc(T, v); }  \
-  static inline void f##T##_setalloc(f##T v, size_t newalloc) {                \
-    fat_setalloc(T, v, newalloc);                                              \
+  static inline size_t f##fa__T##_alloc(const f##fa__T v) {                    \
+    return fat_alloc(fa__T, v);                                                \
+  }                                                                            \
+  static inline void f##fa__T##_setalloc(f##fa__T v, size_t newalloc) {        \
+    fat_setalloc(fa__T, v, newalloc);                                          \
     return;                                                                    \
   }                                                                            \
-  static inline void f##T##_free(const f##T v) {                               \
-    fat_free(T, v);                                                            \
+  static inline void f##fa__T##_free(const f##fa__T v) {                       \
+    fat_free(fa__T, v);                                                        \
     return;                                                                    \
   }                                                                            \
-  f##T f##T##_new(const size_t size) {                                         \
-    struct f##T##_struct *out = (struct f##T##_struct *)calloc(                \
-        1, sizeof(struct f##T##_struct) + sizeof(T) * size);                   \
+  f##fa__T f##fa__T##_new(const size_t size) {                                 \
+    struct f##fa__T##_struct *out = (struct f##fa__T##_struct *)calloc(        \
+        1, sizeof(struct f##fa__T##_struct) + sizeof(fa__T) * size);           \
     if (out == NULL) { /* returns a new fat pointer of the correct type */     \
       fprintf(stderr, "Out of memory!\n");                                     \
       return NULL;                                                             \
@@ -142,7 +148,7 @@
      if (DBUG) {                                                               \
        printf("new:\tvec: %p, []: %p\n", (void *)out, (void *)&out->vec[0]);   \
      } */                                                                      \
-    return (f##T)out->vec;                                                     \
+    return (f##fa__T)out->vec;                                                 \
   }                                                                            \
                                                                                \
   /* Create a new fat pointer array with the content specified by the 'init'   \
@@ -150,31 +156,31 @@
    * and 'initlen'.                                                            \
    * If NULL is used for 'init' the array is initialized with zero bytes.   */ \
                                                                                \
-  f##T f##T##_newfrom(const T init[], const size_t initlen) {                  \
-    f##T out = f##T##_new(((initlen) ? (initlen) : EMPTY_ALLOC));              \
+  f##fa__T f##fa__T##_newfrom(const fa__T init[], const size_t initlen) {      \
+    f##fa__T out = f##fa__T##_new(((initlen) ? (initlen) : FA__EMPTY_ALLOC));  \
     if (init == NULL) {                                                        \
       return out;                                                              \
     }                                                                          \
     for (size_t i = 0; i < initlen; i++) {                                     \
       out[i] = init[i];                                                        \
     }                                                                          \
-    fat_setlen(T, out, initlen);                                               \
+    fat_setlen(fa__T, out, initlen);                                           \
     return out;                                                                \
   }                                                                            \
                                                                                \
   /* Create an empty (zero length) fat array. */                               \
                                                                                \
-  f##T f##T##_empty(void) { return f##T##_new(EMPTY_ALLOC); }                  \
+  f##fa__T f##fa__T##_empty(void) { return f##fa__T##_new(FA__EMPTY_ALLOC); }  \
                                                                                \
   /* Duplicate an fat array. */                                                \
                                                                                \
-  f##T f##T##_dup(const f##T v) {                                              \
-    size_t len = fat_len(T, v);                                                \
-    f##T out = f##T##_new(len);                                                \
+  f##fa__T f##fa__T##_dup(const f##fa__T v) {                                  \
+    size_t len = fat_len(fa__T, v);                                            \
+    f##fa__T out = f##fa__T##_new(len);                                        \
     for (size_t i = 0; i < len; i++) {                                         \
       out[i] = v[i];                                                           \
     }                                                                          \
-    fat_setlen(T, out, fat_len(T, v));                                         \
+    fat_setlen(fa__T, out, fat_len(fa__T, v));                                 \
     return out;                                                                \
   }                                                                            \
                                                                                \
@@ -184,16 +190,16 @@
    * if the specified length is smaller than the current length, no operation  \
    * is performed. */                                                          \
                                                                                \
-  f##T f##T##_growzero(f##T v, size_t len) {                                   \
-    if (fat_len(T, v) >= len) {                                                \
+  f##fa__T f##fa__T##_growzero(f##fa__T v, size_t len) {                       \
+    if (fat_len(fa__T, v) >= len) {                                            \
       return v;                                                                \
     }                                                                          \
-    f##T out = f##T##_new(len);                                                \
-    for (size_t i = 0; i < fat_len(T, v); i++) {                               \
+    f##fa__T out = f##fa__T##_new(len);                                        \
+    for (size_t i = 0; i < fat_len(fa__T, v); i++) {                           \
       out[i] = v[i];                                                           \
     }                                                                          \
-    fat_setlen(T, out, fat_len(T, v));                                         \
-    fat_free(T, v);                                                            \
+    fat_setlen(fa__T, out, fat_len(fa__T, v));                                 \
+    fat_free(fa__T, v);                                                        \
     return out;                                                                \
   }                                                                            \
                                                                                \
@@ -204,52 +210,53 @@
    * references must be substituted with the new pointer returned by the call. \
    */                                                                          \
                                                                                \
-  f##T f##T##_catlen(f##T v, const T *t, size_t len) {                         \
-    if (fat_avail(T, v) < len) {                                               \
-      v = f##T##_growzero(v, fat_len(T, v) + len);                             \
+  f##fa__T f##fa__T##_catlen(f##fa__T v, const fa__T *t, size_t len) {         \
+    if (fat_avail(fa__T, v) < len) {                                           \
+      v = f##fa__T##_growzero(v, fat_len(fa__T, v) + len);                     \
     }                                                                          \
-    size_t last = fat_len(T, v);                                               \
+    size_t last = fat_len(fa__T, v);                                           \
     for (size_t i = 0; i < len; i++) {                                         \
       v[last + i] = t[i];                                                      \
     }                                                                          \
-    fat_inclen(T, v, len);                                                     \
+    fat_inclen(fa__T, v, len);                                                 \
     return v;                                                                  \
   }                                                                            \
                                                                                \
   /* Pushes the value into the end of the array, growing it by a factor of 2   \
    * if needed*/                                                               \
                                                                                \
-  f##T f##T##_push(f##T v, T value) {                                          \
-    if (fat_avail(T, v) == 0) {                                                \
-      v = f##T##_growzero(v, fat_len(T, v) * 2);                               \
+  f##fa__T f##fa__T##_push(f##fa__T v, fa__T value) {                          \
+    if (fat_avail(fa__T, v) == 0) {                                            \
+      v = f##fa__T##_growzero(v, fat_len(fa__T, v) * 2);                       \
     }                                                                          \
-    v[fat_len(T, v)] = value;                                                  \
-    fat_inclen(T, v, 1);                                                       \
+    v[fat_len(fa__T, v)] = value;                                              \
+    fat_inclen(fa__T, v, 1);                                                   \
     return v;                                                                  \
   }                                                                            \
                                                                                \
   /* Removes and returns the last value of the array, returns 0 if empty*/     \
                                                                                \
-  T f##T##_pop(f##T v) {                                                       \
-    if (fat_len(T, v) == 0) {                                                  \
+  fa__T f##fa__T##_pop(f##fa__T v) {                                           \
+    if (fat_len(fa__T, v) == 0) {                                              \
       /* perror("removed element from empty array"); */                        \
-      return (T){0};                                                           \
+      return (fa__T){0};                                                       \
     }                                                                          \
-    T out = v[fat_len(T, v) - 1];                                              \
-    fat_setlen(T, v, fat_len(T, v) - 1);                                       \
+    fa__T out = v[fat_len(fa__T, v) - 1];                                      \
+    fat_setlen(fa__T, v, fat_len(fa__T, v) - 1);                               \
     return out;                                                                \
   }                                                                            \
                                                                                \
-  /* Turn the array into a smaller (or equal) array containing only the        \
+  /* fa__Turn the array into a smaller (or equal) array containing only the    \
    * subarray specified by the 'start' and 'end' indexes.                      \
    *                                                                           \
    * start and end can be negative, where -1 means the last character of the   \
    * array, -2 the penultimate character, and so forth.                        \
    *                                                                           \
-   * The interval is inclusive, so the start and end characters will be part   \
+   * fa__The interval is inclusive, so the start and end characters will be    \
+   * part                                                                      \
    * of the resulting array.                                                   \
    *                                                                           \
-   * The array is modified in-place.                                           \
+   * fa__The array is modified in-place.                                       \
    *                                                                           \
    * Example:                                                                  \
    *                                                                           \
@@ -257,13 +264,13 @@
    * fint_range(s,1,-1); => {2,3,4}                                            \
    */                                                                          \
                                                                                \
-  void f##T##_range(f##T v, int start, int end) {                              \
-    size_t len = fat_len(T, v);                                                \
+  void f##fa__T##_range(f##fa__T v, int start, int end) {                      \
+    size_t len = fat_len(fa__T, v);                                            \
     if (len == 0) return;                                                      \
     if (start < 0) start = len + start;                                        \
     if (end < 0) end = len + end;                                              \
     if (start >= end) {                                                        \
-      fat_setlen(T, v, 0);                                                     \
+      fat_setlen(fa__T, v, 0);                                                 \
       return;                                                                  \
     }                                                                          \
     start--;                                                                   \
@@ -271,7 +278,7 @@
     for (int i = 0; i < end - start; i++) {                                    \
       v[i] = v[start + i];                                                     \
     }                                                                          \
-    fat_setlen(T, v, end - start);                                             \
+    fat_setlen(fa__T, v, end - start);                                         \
   }                                                                            \
                                                                                \
   /* Applies the function func to every element of the array v.                \
@@ -288,8 +295,8 @@
    *                                                                           \
    */                                                                          \
                                                                                \
-  void f##T##_map(f##T v, T (*func)(T)) {                                      \
-    size_t len = fat_len(T, v);                                                \
+  void f##fa__T##_map(f##fa__T v, fa__T (*func)(fa__T)) {                      \
+    size_t len = fat_len(fa__T, v);                                            \
     for (size_t i = 0; i < len; i++) {                                         \
       v[i] = func(v[i]);                                                       \
     }                                                                          \
@@ -310,9 +317,9 @@
    *                                                                           \
    */                                                                          \
                                                                                \
-  T f##T##_fold(f##T v, T (*func)(T, T)) {                                     \
-    size_t len = fat_len(T, v);                                                \
-    T out = v[0];                                                              \
+  fa__T f##fa__T##_fold(f##fa__T v, fa__T (*func)(fa__T, fa__T)) {             \
+    size_t len = fat_len(fa__T, v);                                            \
+    fa__T out = v[0];                                                          \
     for (size_t i = 1; i < len; i++) {                                         \
       out = func(out, v[i]);                                                   \
     }                                                                          \
@@ -335,21 +342,22 @@
    *                                                                           \
    */                                                                          \
                                                                                \
-  f##T f##T##_filter(f##T v, int (*func)(T)) {                                 \
-    f##T out = f##T##_new(8);                                                  \
-    size_t len = fat_len(T, v);                                                \
+  f##fa__T f##fa__T##_filter(f##fa__T v, int (*func)(fa__T)) {                 \
+    f##fa__T out = f##fa__T##_new(8);                                          \
+    size_t len = fat_len(fa__T, v);                                            \
     for (size_t i = 0; i < len; i++) {                                         \
       if (func(v[i])) {                                                        \
-        f##T##_push(out, v[i]);                                                \
+        f##fa__T##_push(out, v[i]);                                            \
       }                                                                        \
     }                                                                          \
     return out;                                                                \
   }                                                                            \
   /** shellsort, using Marcin Ciura's gap sequence */                          \
-  void f##T##_shsort(T array[], int (*cmp)(T, T), size_t len) {                \
+  void f##fa__T##_shsort(fa__T array[], int (*cmp)(fa__T, fa__T),              \
+                         size_t len) {                                         \
     const int gaps[] = {701, 301, 132, 57, 23, 10, 4, 1};                      \
     int i, j, k;                                                               \
-    T tmp;                                                                     \
+    fa__T tmp;                                                                 \
     for (k = 0; k < 8; k++) {                                                  \
       for (i = gaps[k]; (size_t)i < len; i++) {                                \
         for (j = i; j > gaps[k] && cmp(array[j - gaps[k]], array[j]) > 0;      \
@@ -362,15 +370,15 @@
     }                                                                          \
   }                                                                            \
   /* quicksort with small size optimization */                                 \
-  void f##T##_qsort(T array[], int (*cmp)(T, T), int len) {                    \
+  void f##fa__T##_qsort(fa__T array[], int (*cmp)(fa__T, fa__T), int len) {    \
     if (len < 8) {                                                             \
-      f##T##_shsort(array, cmp, len);                                          \
+      f##fa__T##_shsort(array, cmp, len);                                      \
       return;                                                                  \
     }                                                                          \
     /* pivoting */                                                             \
     int p = len / 2, si = 0,                                                   \
         bi = len - 1; /* smaller index and bigger index */                     \
-    T tmp;                                                                     \
+    fa__T tmp;                                                                 \
     while (si < bi) {                                                          \
       for (; cmp(array[si], array[p]) < 0; si++) {                             \
       } /* array[si] < array[p] */                                             \
@@ -382,27 +390,28 @@
       si++;                                                                    \
       bi--;                                                                    \
     }                                                                          \
-    f##T##_qsort(array, cmp, p);                                               \
-    f##T##_qsort(array + p, cmp, len - p);                                     \
+    f##fa__T##_qsort(array, cmp, p);                                           \
+    f##fa__T##_qsort(array + p, cmp, len - p);                                 \
   }                                                                            \
                                                                                \
   /* Sorts the array, it accepts a function which works as                     \
    * strcmp(a,b), returning -1 for a < b, 0 for a == b, 1 a > b or simply a-b. \
    */                                                                          \
                                                                                \
-  void f##T##_sort(f##T v, int (*cmp)(T, T)) {                                 \
-    if (fat_len(T, v) > 10) {                                                  \
-      f##T##_qsort(v, cmp, fat_len(T, v));                                     \
+  void f##fa__T##_sort(f##fa__T v, int (*cmp)(fa__T, fa__T)) {                 \
+    if (fat_len(fa__T, v) > 10) {                                              \
+      f##fa__T##_qsort(v, cmp, fat_len(fa__T, v));                             \
     } else {                                                                   \
-      f##T##_shsort(v, cmp, fat_len(T, v));                                    \
+      f##fa__T##_shsort(v, cmp, fat_len(fa__T, v));                            \
     }                                                                          \
   }                                                                            \
                                                                                \
   /* Finds a number in the array, the cmp function should be the same used for \
    * sorting, to ensure it works                                               \
    */                                                                          \
-  size_t f##T##_bsearch(f##T v, int (*cmp)(T, T), T needle) {                  \
-    long int p = 0, u = fat_len(T, v), m, tmp;                                 \
+  size_t f##fa__T##_bsearch(f##fa__T v, int (*cmp)(fa__T, fa__T),              \
+                            fa__T needle) {                                    \
+    long int p = 0, u = fat_len(fa__T, v), m, tmp;                             \
     do {                                                                       \
       m = p + (u - p) / 2;                                                     \
       tmp = cmp(v[m], needle);                                                 \
@@ -416,7 +425,5 @@
     } while (p < u);                                                           \
     return -1;                                                                 \
   }
-
-// #undef EMPTY_ALLOC
 
 #endif /* FAT_ARRAY_H */
