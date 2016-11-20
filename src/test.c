@@ -22,11 +22,36 @@ typedef struct {
 
 typedef char* str;
 
+
 MAKEFAT(char)
 FCMP(char, a, b) { return (int)a - (int)b; }
 
 MAKEFAT(int)
 FCMP(int, a, b) { return a - b; }
+
+// MAKEFAT(fint)
+// FCMP(fint, a, b){
+//     if(a == NULL && b == NULL){
+//       return 0;
+//     }
+//     if(a == NULL){
+//       return 1;
+//     }
+//     if(b == NULL){
+//       return -1;
+//     }
+//     size_t lena = fat_len(int,a);
+//     size_t lenb = fat_len(int,b);
+//     if(lena != lenb){
+//       return lena-lenb;
+//     }
+//     for(size_t i = 0; i < lena; i++){
+//       if(CMP(int)(a[i],b[i]) != 0){
+//         return CMP(int)(a[i],b[i]);
+//       }
+//     }
+//     return 0;
+// }
 
 MAKEFAT(float)
 FCMP(float, a, b) {
@@ -58,6 +83,15 @@ int square(const int a) { return a * a; }
 
 // filter
 int even(const int a) { return a % 2 == 0; }
+
+fint print_fint(fint a){
+  printf("{");
+  for(size_t i = 0; i < fat_len(int,a); i++){
+    printf("%i,",a[i]);
+  }
+  puts("}");
+  return a;
+}
 
 int main() {
   /**********************************************************
@@ -110,7 +144,6 @@ int main() {
   /**********************************************************
                     testing push and grow
   ***********************************************************/
-
   ut utmp;
   st stmp;
   for (int i = 0; i < 16; i++) {
@@ -126,6 +159,7 @@ int main() {
     fst_arr = fat_push(st, fst_arr, stmp);
     fstr_arr = fat_push(str, fstr_arr, stmp.s);
   }
+
   int passed = 1;
   for (int i = 0; i < 16; i++) {
     if (fint_arr[i] != i || fchar_arr[i] != 'a' + i ||
@@ -323,9 +357,9 @@ int main() {
     stmp.i = i;
     stmp.f = (float)i;
     memset(stmp.s, '\0', 4);
-    stmp.s[0] = 'a' + i;
+    stmp.s[0] = i;
     sort_st = fat_push(st, sort_st, stmp);
-    sort_str = fat_push(str, sort_str, stmp.s);
+    sort_str = fat_push(str, sort_str, fchar_newfrom(stmp.s,2));
   }
   fat_sort(int, sort_int, CMP(int));
   fat_sort(char, sort_char, CMP(char));
@@ -333,16 +367,19 @@ int main() {
   fat_sort(ut, sort_ut, CMP(ut));
   fat_sort(st, sort_st, CMP(st));
   fat_sort(str, sort_str, CMP(str));
+  // for(int i = 0; i < (int)fat_len(str,sort_str); i++){
+  //   printf("%d; ",sort_str[i][0]);
+  // }
   for (size_t i = 0; i < fat_len(int, sort_int); i++) {
     if (0 != (CMP(int)(sort_int[i], (int)i)) ||
         0 != (CMP(char)(sort_char[i], (char)i)) ||
         0 != (CMP(float)(sort_float[i], (float)i)) ||
         0 != (utmp.i = i, CMP(ut)(sort_ut[i], utmp)) ||
         0 != (stmp.i = (int)i, stmp.f = (float)i, memset(stmp.s, '\0', 4),
-              stmp.s[0] = 'a' + (int)i, CMP(st)(sort_st[i], stmp)) ||
+              stmp.s[0] = (int)i, CMP(st)(sort_st[i], stmp)) ||
         0 != (CMP(str)(sort_str[i], stmp.s))) {
-      printf("{%d, %s ,%f},{%d, %s ,%f}\n", stmp.i, stmp.s, stmp.f,
-             sort_st[i].i, sort_st[i].s, sort_st[i].f);
+      printf("{%d, %i ,%f},{%d, %i ,%f}\n", stmp.i, stmp.s[0], stmp.f,
+             sort_st[i].i, sort_st[i].s[0], sort_st[i].f);
       printf("FAILED at sort, at %d\n", __LINE__);
       passed = 0;
     }
@@ -393,6 +430,9 @@ int main() {
   fat_free(float, sort_float);
   fat_free(ut, sort_ut);
   fat_free(st, sort_st);
+  for(int i = 0; i < fat_len(str,sort_str);i++){
+    fat_free(char,sort_str[i]);
+  }
   fat_free(str, sort_str);
 
   fat_free(int, filter);

@@ -14,7 +14,7 @@
 #include <stdlib.h>
 
 #ifndef FA__EMPTY_ALLOC
-  #define FA__EMPTY_ALLOC 8
+#define FA__EMPTY_ALLOC 8
 #endif
 /* TO-DO:
    - Read rest of sds api and implement applicable and usefull functions
@@ -360,7 +360,7 @@
     fa__T tmp;                                                                 \
     for (k = 0; k < 8; k++) {                                                  \
       for (i = gaps[k]; (size_t)i < len; i++) {                                \
-        for (j = i; j > gaps[k] && cmp(array[j - gaps[k]], array[j]) > 0;      \
+        for (j = i; j >= gaps[k] && cmp(array[j - gaps[k]], array[j]) > 0;     \
              j -= gaps[k]) {                                                   \
           tmp = array[j];                                                      \
           array[j] = array[j - 1];                                             \
