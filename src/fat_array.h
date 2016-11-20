@@ -422,7 +422,7 @@
       } else { /* v[m] > needle */                                             \
         u = m - 1;                                                             \
       }                                                                        \
-    } while (p < u);                                                           \
+    } while (p <= u);                                                          \
     return -1;                                                                 \
   }
 

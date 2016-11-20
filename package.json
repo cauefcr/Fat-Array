@@ -1,6 +1,6 @@
 {
   "name": "fat_array",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "repo": "htmk/Fat-Array",
   "description": "Fat array is a dynamic arbitrary typed array using fat pointers and macros.",
   "keywords": ["fptr", "fat", "array", "pointer", "vector", "fatarray", "fat_array"],
