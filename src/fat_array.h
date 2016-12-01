@@ -374,24 +374,25 @@
     if (len < 8) {                                                             \
       f##fa__T##_shsort(array, cmp, len);                                      \
       return;                                                                  \
+    } /* pivoting */                                                           \
+    fa__T pivot = array[len / 2], tmp;                                         \
+    int left = 0, right = len - 1;                                             \
+    while (left <= right) {                                                    \
+      for (; cmp(array[left], pivot) < 0; left++) {                            \
+      }                                                                        \
+      for (; cmp(array[right], pivot) > 0; right--) {                          \
+      }                                                                        \
+      if (left >= right) {                                                     \
+        break;                                                                 \
+      }                                                                        \
+      tmp = array[left]; /* swap */                                            \
+      array[left] = array[right];                                              \
+      array[right] = tmp;                                                      \
+      left++;                                                                  \
+      right--;                                                                 \
     }                                                                          \
-    /* pivoting */                                                             \
-    int p = len / 2, si = 0,                                                   \
-        bi = len - 1; /* smaller index and bigger index */                     \
-    fa__T tmp;                                                                 \
-    while (si < bi) {                                                          \
-      for (; cmp(array[si], array[p]) < 0; si++) {                             \
-      } /* array[si] < array[p] */                                             \
-      for (; cmp(array[bi], array[p]) > 0; bi--) {                             \
-      } /* array[bi] > array[p] */                                             \
-      tmp = array[si];                                                         \
-      array[si] = array[bi];                                                   \
-      array[bi] = tmp;                                                         \
-      si++;                                                                    \
-      bi--;                                                                    \
-    }                                                                          \
-    f##fa__T##_qsort(array, cmp, p);                                           \
-    f##fa__T##_qsort(array + p, cmp, len - p);                                 \
+    f##fa__T##_qsort(array, cmp, left);                                        \
+    f##fa__T##_qsort(array + left, cmp, len - left);                           \
   }                                                                            \
                                                                                \
   /* Sorts the array, it accepts a function which works as                     \

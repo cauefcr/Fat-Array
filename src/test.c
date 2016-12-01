@@ -430,7 +430,7 @@ int main() {
   fat_free(float, sort_float);
   fat_free(ut, sort_ut);
   fat_free(st, sort_st);
-  for(int i = 0; i < fat_len(str,sort_str);i++){
+  for(int i = 0; i < (int) fat_len(str,sort_str);i++){
     fat_free(char,sort_str[i]);
   }
   fat_free(str, sort_str);
